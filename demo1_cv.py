@@ -4,6 +4,25 @@
 #Performs a variety of tasks starting at taking a picture, cropping it, converting to grayscale, masking out a specific color,
 #detecting aruco markers, finding the color values of a pixel, and determining the distance and angle of an aruco marker from the camera within all of these images
 
+#Set up all the LCD Display stuff
+import board
+import busio
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import time
+
+lcd_columns = 16
+lcd_rows = 2
+
+i2c = busio.I2C(board.SCL, board.SDA)
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows)
+
+#Import the other stuff we need
+from smbus2 import SMBus
+
+#Set our bus and address
+bus = SMBus(1)
+#arduino_address = 0x04
+
 import numpy as np
 import cv2 as cv
 from picamera import PiCamera
@@ -71,5 +90,18 @@ def angle_finder():
         
     return(angleDegree)
 
+#Initialize everything for the LCD
+lcd.color = [100, 0, 0]
 
-angle_finder()
+#Make sure the correct arduino file is loaded
+print("Load I2C_Test.ino on the arduino.")
+while True:
+    
+    angle = angle_finder()
+
+    #Print to the LCD -- convert to radians
+    lcd.message = "Aruco detected!" + "\nAngle: " + angle
+    #lcd.message = "sent: " + str(cam_quadrant) + "\nreceived: " + '45'
+    
+    time.sleep(3)
+
