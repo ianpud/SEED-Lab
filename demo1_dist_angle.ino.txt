@@ -1,0 +1,133 @@
+//The function of this code is to have the user enter a desired angle for the robot to turn and a desired distance for the robot to travel. The robot will take these inputs, turn to the desired angle and then drive forward the desired distance in feet.
+
+#include <Encoder.h>
+
+Encoder leftWheel(2,5); //Encoder Pins for Left Wheel
+Encoder rightWheel(3,6);//Encoder Pins for Right Wheel
+
+int motorEnable = 4;
+
+int wheelRightDirection = 8;
+int wheelLeftDirection = 7;
+
+int wheelRightSpeed = 10;
+int wheelLeftSpeed = 9;
+
+int rightPinA = 3;
+int leftPinA = 2;
+
+int rightPinB = 6;
+int leftPinB = 5;
+
+long positionLeft  = -999;
+long positionRight = -999;
+
+
+int currentPosition;
+int currentError;
+double valueVolts;
+double inputVolts;
+double kP = 0.518; //Kp value for PID Controller
+
+
+
+void setup() {
+  
+pinMode(motorEnable, OUTPUT);
+pinMode(wheelRightDirection, OUTPUT);
+pinMode(wheelLeftDirection, OUTPUT);
+pinMode(wheelRightSpeed, OUTPUT);
+pinMode(wheelLeftSpeed, OUTPUT);
+digitalWrite(motorEnable, HIGH);
+digitalWrite(wheelLeftDirection, LOW);
+digitalWrite(wheelRightDirection, HIGH);
+analogWrite(wheelRightSpeed, HIGH);
+analogWrite(wheelLeftSpeed, HIGH);
+Serial.begin(9600);
+
+}
+
+void loop() {
+turnAngle(90); //Allows user to change desired angle
+delay(1000); //Waits 1 second to move after turning to desired angle
+drive(1); //Allows user to change desired distance
+  }
+
+  
+  
+
+  void drive(double feet){
+    leftWheel.write(0); //Reset encoder values to 0
+    rightWheel.write(0);
+double feetin = feet;
+double inchin = feetin*12; //Converts desired feet to inches
+int countout = inchin*170; //Converts inches to encoder counts
+    currentPosition = rightWheel.read();
+currentError = countout - currentPosition; //Calculates error betweet desired position and current
+
+  while(1){ //Infinite loop
+    currentPosition = leftWheel.read();
+    currentError = countout - currentPosition;
+    if(currentError < 0){ //If the error is less than 0 keep going straight
+digitalWrite(wheelRightDirection, HIGH);
+digitalWrite(wheelLeftDirection, LOW);
+    }
+    else if(currentError > 0){ //If error is more that 0 correct by going backwards
+digitalWrite(wheelRightDirection, LOW);
+digitalWrite(wheelLeftDirection, HIGH);
+    }
+
+    valueVolts = abs(currentError*kP); //Sends error value through PID controller
+    inputVolts = (((valueVolts)/8)*255); //Convert from volts to PWM
+    analogWrite(9, inputVolts);
+    analogWrite(10, inputVolts);
+    
+  }
+  
+  //Old code to print encoder values
+  long newLeft, newRight;
+  newLeft = leftWheel.read();
+  newRight = rightWheel.read();
+  if (newLeft != positionLeft || newRight != positionRight) {
+    Serial.print("Left = ");
+    Serial.print(newLeft);
+    Serial.print(", Right = ");
+    Serial.print(newRight);
+    Serial.println();
+    positionLeft = newLeft;
+    positionRight = newRight;
+  }
+  }
+  
+  
+void turnAngle(double angle){
+    double anglein = angle;
+    int countout = anglein * 18.5; //Converts from degrees to counts
+    int temp = 0;
+
+    while(1){
+      currentPosition = rightWheel.read();
+      currentError = countout - currentPosition;
+      if(currentError > 0){ //If error is more than 0 correct by turning clockwise
+        digitalWrite(wheelRightDirection, HIGH);
+        digitalWrite(wheelLeftDirection, HIGH);
+       }
+      else if(currentError < 0){ //If error is less than 0 keep turning counter clockwise
+        digitalWrite(wheelRightDirection, LOW);
+        digitalWrite(wheelLeftDirection, LOW);
+      }
+      else{ //Break loop if error is 0
+      temp += 1;
+      if(temp == 20){
+        break;
+      }
+    }
+
+    valueVolts = abs(currentError*kP); //Runs error through PID controller
+    inputVolts = (((valueVolts)/8)*255); //Convert from volts to PWM
+    analogWrite(9, inputVolts); //Send PWM value to motors
+    analogWrite(10, inputVolts); 
+  }
+}
+
+
