@@ -1,6 +1,6 @@
 #Demo1
 #Open CV
-#Zoe Logan - Group 8
+#Zoe Logan and Lydia Jameson - Group 8
 #Performs a variety of tasks starting at taking a picture, cropping it, converting to grayscale, masking out a specific color,
 #detecting aruco markers, finding the color values of a pixel, and determining the distance and angle of an aruco marker from the camera within all of these images
 
@@ -93,15 +93,15 @@ def angle_finder():
 #Initialize everything for the LCD
 lcd.color = [100, 0, 0]
 
-#Make sure the correct arduino file is loaded
-print("Load I2C_Test.ino on the arduino.")
+#Loop for testing. Press ^C to exit
 while True:
     
+    #angle_finder takes pictures until it gras a measurement
     angle = angle_finder()
 
     #Print to the LCD -- convert to radians
     lcd.message = "Aruco detected!" + "\nAngle: " + angle
-    #lcd.message = "sent: " + str(cam_quadrant) + "\nreceived: " + '45'
     
+    #keep the message on the LCD for three seconds
     time.sleep(3)
 
