@@ -1,16 +1,18 @@
 #Demo1
 #Open CV
 #Zoe Logan - Group 8
-#Performs a variety of tasks starting at taking a picture, cropping it, converting to grayscale, masking out a specific color,
-#detecting aruco markers, finding the color values of a pixel, and determining the distance and angle of an aruco marker from the camera within all of these images
+#Takes a photo, Detects if an aruco marker is in the photo, and if so reports the angle from the marker to the center of the image, 
+#with a positive angle to the left of the center of the image
+#Then reports this value back to the LCD screen via the arduino communication
 
+#camera initialization
 import numpy as np
 import cv2 as cv
 from picamera import PiCamera
 from time import sleep
 import math
 
-camera = PiCamera()
+camera = PiCamera() #defines the camera, as well as the calibration matrix with the focal point
 cam = np.array([[ 534, 0, 341],
  [0, 534, 233],[0, 0, 1]])
 dist = np.array([-2.94138985e-01, 1.22538100e-01, 1.28531080e-03, -2.57140954e-04, 1.35279717e-02])
@@ -24,12 +26,12 @@ camera.awb_gains = cam_gain #set to manual data given by gains earlier
 
 camera.iso = 640 #set to take pictures in poorer light
 
-def angle_finder():
+def angle_finder(): #finds the angle from the center of the marker to the center of the image
     i = 0 #to number pics taken
     pic_not_found = 1
     while(pic_not_found == 1):#go until a marker is found
         
-        camera.capture("demo1-%d.jpg" % i)
+        camera.capture("demo1-%d.jpg" % i) #take an image
         img = cv.imread("demo1-%d.jpg" % i)
         cv.imshow("img", i)
         gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)#convert to grayscale
@@ -72,4 +74,3 @@ def angle_finder():
     return(angleDegree)
 
 
-angle_finder()
