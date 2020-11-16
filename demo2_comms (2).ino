@@ -137,6 +137,7 @@ void sendData(){
   Wire.write(ready_bool);
 }
 
+//Function to turn the robot
 void turnAngle(double angle){
   Serial.println("Started turning!");
     double anglein = angle;
@@ -187,6 +188,7 @@ void turnAngle(double angle){
   Serial.println("Done turning!");
 }
 
+//Function to move the robot forwards and backwards
 void drive(double feet){
   Serial.println("Started driving!");
   leftWheel.write(0); //Reset encoder values to 0
@@ -229,6 +231,7 @@ void drive(double feet){
   Serial.println("Done driving!");
 }
 
+//Circle function
 void doCircle(){
   leftWheel.write(0); //Reset encoder values to 0
   rightWheel.write(0);
@@ -263,6 +266,7 @@ void doCircle(){
   }
 }
 
+//Unused square function
 void doSquare(){
   turnAngle(90);
   delay(100);
