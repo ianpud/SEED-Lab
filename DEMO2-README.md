@@ -7,13 +7,17 @@ Demo2 is the next step for the robot to get to the final demonstration. The two 
 
 The demo2 code is comprised of the following files: 
 demo2_cv_lcd.py
-**
+demo2_comms.ino
 
-demo2_cv_lcd.py consists of all of the Raspberry pi code, and is responsible for the computer vision, system integration, and controlling the Arduino.
+-demo2_cv_lcd.py consists of all of the Raspberry pi code, and is responsible for the computer vision, system integration, and controlling the Arduino.
 It first prompts for what test to be completed, and then runs said test. 
 
 For both tests, the robot will first take images until it finds an Aruco marker, (via a sweep run through the Arduino), and then sends the angle and distance of the marker to the Arduino via the system integration read and write byte functions. 
 
 
 
+
+-demo2_comms.ino contains all of the Arduino code, and is responsible for reading in the Pi commands via I2C, and driving the motors to make the robot turn as asked. 
+
+It first initializes the motors and gets the robot ready to move, then waits for the command control message from the Pi to tell it which maneuver (drive up to the beacon or do a circle around it) to do. It then calls the various turnAngle and drive functions along with reading in the CV information from the Pi to tell it where to go, and performs the maneuver. 
 
